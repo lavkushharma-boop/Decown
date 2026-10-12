@@ -3,7 +3,8 @@
  *   npm run db:seed            # refuses if products already exist
  *   npm run db:seed -- --force # wipes products/categories first
  *
- * Images go to Vercel Blob when BLOB_READ_WRITE_TOKEN is set, otherwise to public/uploads (local dev only).
+ * Images go to Vercel Blob when BLOB_READ_WRITE_TOKEN or BLOB_STORE_ID (+ VERCEL_OIDC_TOKEN) is set,
+ * otherwise to public/uploads (local dev only).
  */
 import "./env";
 import fs from "node:fs";
@@ -34,11 +35,12 @@ function parseCatalogue(html: string) {
   return { images, list };
 }
 
+const useBlob = Boolean(process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_STORE_ID);
 const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
 async function storeImage(key: string, name: string, img: { type: string; data: Buffer }) {
   const ext = img.type.split("/")[1];
-  if (process.env.BLOB_READ_WRITE_TOKEN) {
+  if (useBlob) {
     const res = await put(`products/${slug(name)}.${ext}`, img.data, { access: "public", contentType: img.type, addRandomSuffix: true });
     return res.url;
   }
@@ -62,7 +64,7 @@ async function main() {
 
   const { images, list } = parseCatalogue(fs.readFileSync(SOURCE, "utf8"));
   console.log(`Found ${list.length} products and ${images.size} images in ${SOURCE}`);
-  console.log(process.env.BLOB_READ_WRITE_TOKEN ? "Uploading images to Vercel Blob…" : "No BLOB_READ_WRITE_TOKEN: saving images to public/uploads (local only)");
+  console.log(useBlob ? "Uploading images to Vercel Blob…" : "No Blob credentials: saving images to public/uploads (local only)");
 
   // Upload first (slow, network), then write the DB in one transaction.
   const urls: string[] = [];

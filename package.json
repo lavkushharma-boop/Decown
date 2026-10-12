@@ -12,7 +12,7 @@
     "db:local": "NODE_OPTIONS=--experimental-global-customevent pglite-server --db=.pglite --port=5433 --max-connections=10"
   },
   "dependencies": {
-    "@vercel/blob": "1.1.1",
+    "@vercel/blob": "2.8.1",
     "drizzle-orm": "0.45.4",
     "next": "15.5.27",
     "postgres": "3.4.9",

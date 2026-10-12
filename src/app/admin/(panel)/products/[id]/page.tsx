@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { asc, eq } from "drizzle-orm";
 import { db } from "@/db";
 import { categories, products } from "@/db/schema";
-import { blobEnabled } from "@/lib/storage";
 import { ProductForm } from "@/components/admin/ProductForm";
 
 export default async function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
@@ -22,7 +21,7 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
           <p><Link href="/admin/products">← All products</Link></p>
         </div>
       </div>
-      <ProductForm product={product} categories={cats} blobEnabled={blobEnabled()} />
+      <ProductForm product={product} categories={cats} />
     </>
   );
 }

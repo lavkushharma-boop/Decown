@@ -1,5 +1,4 @@
 "use client";
-import { upload } from "@vercel/blob/client";
 import { useRef, useState } from "react";
 
 const MAX_SIDE = 1600;
@@ -21,9 +20,10 @@ async function optimise(file: File): Promise<File> {
   }
 }
 
-const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || "image";
+// Must stay under the 4.5 MB request limit of Vercel functions (checked again on the server).
+const MAX_BYTES = 4 * 1024 * 1024;
 
-export function ImageUpload({ name, defaultUrl, blobEnabled }: { name: string; defaultUrl?: string; blobEnabled: boolean }) {
+export function ImageUpload({ name, defaultUrl }: { name: string; defaultUrl?: string }) {
   const [url, setUrl] = useState(defaultUrl ?? "");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -37,21 +37,13 @@ export function ImageUpload({ name, defaultUrl, blobEnabled }: { name: string; d
     setBusy(true);
     try {
       const f = await optimise(file);
-      if (blobEnabled) {
-        const res = await upload(`products/${slug(f.name)}.${f.type.split("/")[1]}`, f, {
-          access: "public",
-          handleUploadUrl: "/api/upload",
-          contentType: f.type,
-        });
-        setUrl(res.url);
-      } else {
-        const body = new FormData();
-        body.append("file", f);
-        const res = await fetch("/api/upload-local", { method: "POST", body });
-        const json = await res.json();
-        if (!res.ok) throw new Error(json.error);
-        setUrl(json.url);
-      }
+      if (f.size > MAX_BYTES) throw new Error("Image is larger than 4 MB. Please use a smaller photo.");
+      const body = new FormData();
+      body.append("file", f);
+      const res = await fetch("/api/upload", { method: "POST", body });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(json.error || "Upload failed. Please try again.");
+      setUrl(json.url);
     } catch (e) {
       setError((e as Error).message || "Upload failed. Please try again.");
     } finally {

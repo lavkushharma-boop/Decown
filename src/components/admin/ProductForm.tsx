@@ -5,9 +5,9 @@ import { saveProduct } from "@/app/admin/actions";
 import type { Product } from "@/db/schema";
 import { ImageUpload } from "./ImageUpload";
 
-type Props = { product?: Product; categories: { id: number; name: string }[]; blobEnabled: boolean };
+type Props = { product?: Product; categories: { id: number; name: string }[] };
 
-export function ProductForm({ product, categories, blobEnabled }: Props) {
+export function ProductForm({ product, categories }: Props) {
   const [state, action, pending] = useActionState(saveProduct, undefined);
 
   return (
@@ -40,7 +40,7 @@ export function ProductForm({ product, categories, blobEnabled }: Props) {
         </div>
         <div className="card upload-col">
           <span className="label" style={{ display: "block", marginBottom: 8 }}>Product image</span>
-          <ImageUpload name="imageUrl" defaultUrl={product?.imageUrl} blobEnabled={blobEnabled} />
+          <ImageUpload name="imageUrl" defaultUrl={product?.imageUrl} />
         </div>
       </div>
       <div className="form-foot">
