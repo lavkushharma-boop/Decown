@@ -1,0 +1,36 @@
+{
+  "name": "decown-catalogue",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "tsx scripts/migrate.ts && next build",
+    "start": "next start",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx scripts/migrate.ts",
+    "db:seed": "tsx scripts/seed.ts",
+    "db:local": "NODE_OPTIONS=--experimental-global-customevent pglite-server --db=.pglite --port=5433 --max-connections=10"
+  },
+  "dependencies": {
+    "@vercel/blob": "1.1.1",
+    "drizzle-orm": "0.45.4",
+    "next": "15.5.27",
+    "postgres": "3.4.9",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "server-only": "0.0.1",
+    "tsx": "4.23.15"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.8",
+    "@electric-sql/pglite-socket": "0.2.11",
+    "@types/node": "20.19.43",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "drizzle-kit": "0.31.11",
+    "typescript": "5.9.3"
+  },
+  "engines": {
+    "node": ">=18.18"
+  }
+}

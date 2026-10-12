@@ -1,0 +1,11 @@
+node_modules
+.next
+out
+.env
+.env*.local
+.vercel
+.pglite
+public/uploads
+next-env.d.ts
+*.tsbuildinfo
+npm-debug.log*
